@@ -1,0 +1,6 @@
+[submodule "submodules/smplify-x"]
+	path = submodules/smplify-x
+	url = https://github.com/vchoutas/smplify-x.git
+[submodule "submodules/openpose"]
+	path = submodules/openpose
+	url = https://github.com/AlecDusheck/openpose.git

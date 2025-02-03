@@ -89,9 +89,9 @@ def main(data_path, front_img, back_img, model='smpl'):
     textured_smplx.get_texture_SMPL(b_img, b_obj, b_pkl, npath, 'back', template_obj)   
     
     # step.2: produce PGN texture (optional)
-    
-    textured_smplx.get_texture_SMPL(f_pgn, f_obj, f_pkl, npath, 'front_PGN', template_obj)
-    textured_smplx.get_texture_SMPL(b_pgn, b_obj, b_pkl, npath, 'back_PGN', template_obj)
+    if pgn_path:
+        textured_smplx.get_texture_SMPL(f_pgn, f_obj, f_pkl, npath, 'front_PGN', template_obj)
+        textured_smplx.get_texture_SMPL(b_pgn, b_obj, b_pkl, npath, 'back_PGN', template_obj)
     
     # step3: combine all the textures
     

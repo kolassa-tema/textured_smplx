@@ -1,0 +1,2 @@
+dir=${1:-obj1}
+cd submodules/openpose && ./build/examples/openpose/openpose.bin --display 0  --render_pose 1 --image_dir /workspace/submodules/textured_smplx/data/$dir/color --write_json /workspace/submodules/textured_smplx/data/$dir/keypoints --write_images /workspace/submodules/textured_smplx/data/$dir/pose_images --hand --face

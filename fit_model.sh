@@ -1,0 +1,2 @@
+$dir=${1:-obj1}
+cd submodules/smplify-x && python3 smplifyx/main.py --config cfg_files/fit_smplx.yaml --data_folder ../../data/$dir/ --output_folder ../../data/$dir/smplx --visualize=False --use_multi_view=True --model_folder ../../models/ --vposer_ckpt ../../models/V02_05

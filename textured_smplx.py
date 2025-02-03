@@ -45,7 +45,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     vt[:, 1] = 1-vt[:, 1] # smplx texture is flipped
     fv = obj_fv(template_obj)
     ft = obj_ft(template_obj)
-    vtuv = (vt*1000).astype(np.int)
+    vtuv = (vt*1000).astype(int)
     
     fnorm = fv2norm(fv, vv)
     
@@ -55,7 +55,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     
     rmat = np.array(data['camera_rotation']).reshape(3,3)
     tvec = np.array(data['camera_translation']).reshape(3)
-    cameraMatrix = np.array([[5000,0,width//2],[0,5000,height//2],[0,0,1]], np.float)
+    cameraMatrix = np.array([[5000,0,width//2],[0,5000,height//2],[0,0,1]], float)
     
     vuv = utils.p3d_p2d(vv, rmat, tvec, cameraMatrix).reshape(-1,3)
     
@@ -63,13 +63,13 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     # vuv: vertices in texture space (u,v)
     # vd: vertices depth
     
-    vuv = vuv.astype(np.int) 
+    vuv = vuv.astype(int) 
     
     timg = img.copy() # img with triangles
     for _fv in fv:
         cv2_triangle(timg, vuv[_fv])
         
-    #cv2.imwrite(os.path.join(npath, 'T%05d_all_V.png'%frame), timg)
+    cv2.imwrite(os.path.join(npath, 'T%s_all_V.png'%obj_name), timg)
     
     
     texture = np.zeros((1000,1000, 3), np.uint8)
@@ -77,11 +77,11 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     for _ft in ft:
         cv2.drawContours(texture, [vtuv[_ft]], 0, (100,100,100), -1)
         
-    #cv2.imwrite(os.path.join(npath, 'T%05d_all_texture.png'%frame), texture)        
+    cv2.imwrite(os.path.join(npath, 'T%s_all_texture.png'%obj_name), texture)        
     
             
     
-    fd = np.zeros(fv.shape[0], dtype=np.float)
+    fd = np.zeros(fv.shape[0], dtype=float)
     for no, _fv in enumerate(fv): #todo: vectorization
         fd[no] = max(vd[_fv]) # most far away point
     f_order = np.argsort(-fd) # f index from far to near
@@ -89,6 +89,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     img_f = np.ones(img.shape[:2], dtype=np.int16) * -1
     for f in f_order:
         cv2.drawContours(img_f, [vuv[fv[f]]], 0, int(f), -1)
+    cv2.imwrite(os.path.join(npath, 'T%s_mapped.png'%obj_name), img_f)        
     visible_f = np.unique(img_f.flatten())[1:] # remove -1
     
     
@@ -97,7 +98,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
     for f in visible_f:
         cv2_triangle(timg, vuv[fv[f]])
         
-    #cv2.imwrite(os.path.join(npath, 'T%05d_V.png'%frame), timg)  
+    cv2.imwrite(os.path.join(npath, 'T%s_V.png'%obj_name), timg)  
     
     vis_texture = np.zeros((1000,1000), np.uint8)
     for f in visible_f:
@@ -105,8 +106,8 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
         cv2.drawContours(vis_texture, [vtuv[ft[f]]], 0, 255, -1)
         
         
-    #cv2.imwrite(os.path.join(npath, 'T%05d_v_texture.png'%frame), texture)  
-    #cv2.imwrite(os.path.join(npath, '%s_vis_texture.png'%obj_name), vis_texture)  
+    cv2.imwrite(os.path.join(npath, 'T%s_v_texture.png'%obj_name), texture)  
+    cv2.imwrite(os.path.join(npath, '%s_vis_texture.png'%obj_name), vis_texture)  
     
     img_f_texture = np.ones((1000,1000), dtype=np.int16) * -1
     for f in visible_f:
@@ -114,7 +115,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
         
     
     norm_texture = np.ones((1000,1000,3), np.uint8)# * 255
-    depth_texture = np.zeros((1000,1000), np.float)# * 255
+    depth_texture = np.zeros((1000,1000), float)# * 255
     norm_photo = np.ones(img.shape, np.uint8)# * 255
     
      
@@ -134,7 +135,7 @@ def get_texture_SMPL(fname_img, fname_obj, fname_pkl, npath, obj_name, template_
                 p1p3 = p3-p1
                 _u,_v = np.linalg.solve(((p1p2[0],p1p3[0]),(p1p2[1],p1p3[1])),p1px)
                 
-                u,v = (_vuv[0] + _u*(_vuv[1]-_vuv[0]) + _v*(_vuv[2]-_vuv[0])).astype(np.int)
+                u,v = (_vuv[0] + _u*(_vuv[1]-_vuv[0]) + _v*(_vuv[2]-_vuv[0])).astype(int)
                 
                 _vv = vv[fv[f]]
                 
@@ -192,7 +193,7 @@ def combine_texture_SMPL(inPath, frames=None):
     all_vis = cv2.cvtColor(all_vis, cv2.COLOR_BGR2GRAY) > 200
     if os.path.isfile(f_pgn):
         pgn = cv2.imread(f_pgn)
-        pgn = pgn.astype(np.int).sum(-1) > 0
+        pgn = pgn.astype(int).sum(-1) > 0
         for i in range(4):
             pgn = scipy.ndimage.binary_erosion(pgn)
         all_vis[pgn==0]=0
@@ -209,7 +210,7 @@ def combine_texture_SMPL(inPath, frames=None):
         f_pgn = f_vis.replace('_norm_texture.png','_PGN_texture.png') # optional
         if os.path.isfile(f_pgn):
             pgn = cv2.imread(f_pgn)
-            pgn = pgn.astype(np.int).sum(-1) > 0
+            pgn = pgn.astype(int).sum(-1) > 0
             for i in range(4):
                 pgn = scipy.ndimage.binary_erosion(pgn)
             vis[pgn==0]=0 
@@ -228,8 +229,8 @@ def complete_texture(f_texture, f_vis, f_mask):
     vis = cv2.imread(f_vis)[:,:,0]
     mask = cv2.imread(f_mask)[:,:,0]
     labels, num_label = scipy.ndimage.measurements.label(mask)    
-    texture_sum = np.zeros(texture.shape, np.float)
-    texture_count = np.zeros((texture.shape[0], texture.shape[1], 1), np.int)
+    texture_sum = np.zeros(texture.shape, float)
+    texture_count = np.zeros((texture.shape[0], texture.shape[1], 1), int)
     h,w = vis.shape
     
     dxdy = ((1,0),(-1,0),(0,1),(0,-1))

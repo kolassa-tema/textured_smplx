@@ -1,0 +1,21 @@
+services:
+  textured-smplx:
+    shm_size: '20gb'
+    build:
+      context: .
+    command: tail -f /dev/null
+    volumes:
+      - ./:/workspace
+      - capture:/capture
+    deploy:
+      resources:
+        limits:
+          memory: 30G
+        reservations:
+          devices:
+            - count: all
+              capabilities: [gpu]
+    memswap_limit: 64G
+volumes:
+  capture:
+    external: true
